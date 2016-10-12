@@ -291,7 +291,7 @@ class BaseStl(base.BaseMesh):
                 metadata.__package_name__,
                 metadata.__version__,
                 datetime.datetime.now(),
-                name,
+                name
             )
         else:
             header = '%s' % name
