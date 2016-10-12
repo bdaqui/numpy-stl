@@ -215,7 +215,7 @@ class BaseStl(base.BaseMesh):
             name = next(iterator)
             return name, numpy.fromiter(iterator, dtype=cls.dtype)
 
-    def save(self, filename, fh=None, mode=AUTOMATIC, update_normals=True, preserve_solid_name=False):
+    def save(self, filename, fh=None, mode=AUTOMATIC, update_normals=True, use_filename_as_solid_name=True):
         '''Save the STL to a (binary) file
 
         If mode is :py:data:`AUTOMATIC` an :py:data:`ASCII` file will be
@@ -225,7 +225,7 @@ class BaseStl(base.BaseMesh):
         :param file fh: The file handle to open
         :param int mode: The mode to write, default is :py:data:`AUTOMATIC`.
         :param bool update_normals: Whether to update the normals
-        :param bool preserve_solid_name: Whether to write the currently specified solid name to the new STL file
+        :param bool use_filename_as_solid_name: Whether to use the filename as the new solid name or preserve the currently specified stl.Mesh.name
         '''
         assert filename, 'Filename is required for the STL headers'
         if update_normals:
@@ -243,7 +243,7 @@ class BaseStl(base.BaseMesh):
         else:
             raise ValueError('Mode %r is invalid' % mode)
 
-        if preserve_solid_name:
+        if not use_filename_as_solid_name:
             name = self.name
         else:
             name = os.path.split(filename)[-1]
