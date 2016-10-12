@@ -245,25 +245,29 @@ class BaseStl(base.BaseMesh):
 
         if not use_filename_as_solid_name:
             name = self.name
+            write_extrametadata = False
         else:
             name = os.path.split(filename)[-1] if fh else filename
+            write_extrametadata = True
 
         try:
             if fh:
-                write(fh, name)
+                write(fh, name, write_extrametadata)
             else:
                 with open(filename, 'wb') as fh:
-                    write(fh, name)
+                    write(fh, name, write_extrametadata)
         except IOError:  # pragma: no cover
             pass
 
-    def _write_ascii(self, fh, name):
+    def _write_ascii(self, fh, name, write_extra_metadata=False):
         if _speedups and self.speedups:
             _speedups.ascii_write(fh, b(name), self.data)
         else:
             def p(s, file):
                 file.write(b('%s\n' % s))
 
+            if write_extra_metadata:
+                pass  # additional data not written yet to the solid tag/name
             p('solid %s' % name, file=fh)
 
             for row in self.data:
@@ -276,16 +280,21 @@ class BaseStl(base.BaseMesh):
                 p('  endloop', file=fh)
                 p('endfacet', file=fh)
 
+            if write_extra_metadata:
+                pass  # additional data not written yet to the solid tag/name
             p('endsolid %s' % name, file=fh)
 
-    def _write_binary(self, fh, name):
+    def _write_binary(self, fh, name, write_extra_metadata=True):
         # Create the header
-        header = '%s (%s) %s %s' % (
-            metadata.__package_name__,
-            metadata.__version__,
-            datetime.datetime.now(),
-            name,
-        )
+        if write_extra_metadata:
+            header = '%s (%s) %s %s' % (
+                metadata.__package_name__,
+                metadata.__version__,
+                datetime.datetime.now(),
+                name,
+            )
+        else:
+            header = '%s' % name
 
         # Make it exactly 80 characters
         header = header[:80].ljust(80, ' ')
