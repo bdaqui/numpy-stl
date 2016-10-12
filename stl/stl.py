@@ -246,14 +246,14 @@ class BaseStl(base.BaseMesh):
         if not use_filename_as_solid_name:
             name = self.name
         else:
-            name = os.path.split(filename)[-1]
+            name = os.path.split(filename)[-1] if fh else filename
 
         try:
             if fh:
                 write(fh, name)
             else:
                 with open(filename, 'wb') as fh:
-                    write(fh, filename)
+                    write(fh, name)
         except IOError:  # pragma: no cover
             pass
 
